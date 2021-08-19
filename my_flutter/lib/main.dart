@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_flutter/pages/login_page.dart';
 
 import 'common/Global.dart';
+import 'common/Global.dart';
 
 void main() {
   Global.init().then((value) => runApp(MyApp()));
