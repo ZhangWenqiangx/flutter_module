@@ -1,3 +1,2 @@
 # flutter_module
-my_flutter of a-project
-与
+my_flutter of a-project 混合于A-Project
