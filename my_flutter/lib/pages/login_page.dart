@@ -16,7 +16,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
-    _pageController = new PageController(initialPage: 0, viewportFraction: 0.85);
+    _pageController =
+        new PageController(initialPage: 0, viewportFraction: 0.85);
     _pageView = new PageView(
       controller: _pageController,
       children: <Widget>[
@@ -47,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             //头部 图片 Logo
             Padding(
-              padding: EdgeInsets.only(top: 65,bottom: 20),
+              padding: EdgeInsets.only(top: 65, bottom: 20),
               child: Image(
                 width: 180,
                 height: 160,
