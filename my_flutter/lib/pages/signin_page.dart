@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_boost/boost_channel.dart';
+import 'package:flutter_boost/boost_navigator.dart';
 import 'package:my_flutter/utils/data_utils.dart';
 import 'package:my_flutter/utils/http/api_response.dart';
 
@@ -160,9 +162,11 @@ class _SingInPageState extends State<SingInPage> {
 
     DataUtils.doLogin(username, password).then((value) {
       if (value.status == Status.COMPLETED) {
+        BoostChannel.instance.sendEventToNative("login_event", {"": ""});
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(value.data!.username!),
         ));
+        BoostNavigator.instance.pop("");
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(value.exception!.message!),

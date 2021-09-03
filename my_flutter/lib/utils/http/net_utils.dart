@@ -1,40 +1,57 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:my_flutter/common/Global.dart';
+
 import 'ErrorInterceptor.dart';
 
 Map<String, dynamic> optHeader = {'content-type': 'application/json'};
 
-var dio = Dio(BaseOptions(connectTimeout: 30000, headers: optHeader));
-
 class NetUtils {
-  static Future get(String url, [Map<String, dynamic>? params]) async {
-    dio.interceptors.add(ErrorInterceptor());
-    dio.interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
+  factory NetUtils() => _getInstance();
+
+  static NetUtils get instance => _getInstance();
+  static NetUtils? _instance;
+  static late Dio _dio;
+
+  static NetUtils _getInstance() {
+    if (null == _instance) {
+      _instance = new NetUtils._internal();
+    }
+    return _instance!;
+  }
+
+  NetUtils._internal() {
+    _dio = Dio(BaseOptions(connectTimeout: 30000, headers: optHeader));
+    _dio.interceptors.add(ErrorInterceptor());
+    _dio.interceptors.add(CookieManager(Global.cookieJar));
+    _dio.interceptors
+        .add(LogInterceptor(responseBody: true, requestBody: true));
+  }
+
+  Future get(String url, [Map<String, dynamic>? params]) async {
     var response;
     if (params != null) {
-      response = await dio.get(url, queryParameters: params);
+      response = await _dio.get(url, queryParameters: params);
     } else {
-      response = await dio.get(url);
+      response = await _dio.get(url);
     }
-    return getData(response);
+    return _getData(response);
   }
 
-  static Future post(String url, Map<String, dynamic> params) async {
-    dio.interceptors.add(ErrorInterceptor());
-    dio.interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
-    var response = await dio.post(url, data: params);
-    return getData(response);
+  Future post(String url, Map<String, dynamic> params) async {
+    var response = await _dio.post(url, data: params);
+    return _getData(response);
   }
 
-  static Future postForm(String url, FormData params) async {
-    dio.interceptors.add(ErrorInterceptor());
-    dio.interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
-    var response = await dio.post(url, data: params);
-    return getData(response);
+  Future postForm(String url, FormData params) async {
+    var response = await _dio.post(url, data: params);
+    return _getData(response);
   }
 
-  static getData(Response response) {
+  _getData(Response response) {
     String jsonStr = json.encode(response.data);
     Map<String, dynamic> map = json.decode(jsonStr);
     return map['data'];

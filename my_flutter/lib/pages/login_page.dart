@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_boost/boost_channel.dart';
 import 'package:my_flutter/pages/signin_page.dart';
 import 'package:my_flutter/pages/signout_page.dart';
 
