@@ -7,7 +7,8 @@ import 'package:flutter_boost/boost_channel.dart';
 import 'package:flutter_boost/boost_flutter_binding.dart';
 import 'package:flutter_boost/boost_navigator.dart';
 import 'package:flutter_boost/flutter_boost_app.dart';
-import 'package:my_flutter/pages/coin_page.dart';
+import 'package:my_flutter/pages/coin_list_page.dart';
+import 'package:my_flutter/pages/coin_rank_page.dart';
 import 'package:my_flutter/pages/home_page.dart';
 import 'package:my_flutter/pages/login_page.dart';
 
@@ -52,7 +53,11 @@ class _MyAppState extends State<MyApp> {
     },
     'coin_list': (settings, uniqueId) {
       return PageRouteBuilder<dynamic>(
-          settings: settings, pageBuilder: (_, __, ___) => CoinPage(params: settings.arguments));
+          settings: settings, pageBuilder: (_, __, ___) => CoinListPage(params: settings.arguments));
+    },
+    'coin_rank': (settings, uniqueId) {
+      return PageRouteBuilder<dynamic>(
+          settings: settings, pageBuilder: (_, __, ___) => CoinRankPage());
     },
   };
 

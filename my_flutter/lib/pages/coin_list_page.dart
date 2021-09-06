@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boost/boost_navigator.dart';
+import 'package:my_flutter/api/api.dart';
 import 'package:my_flutter/models/CoinListInfo.dart';
 import 'package:my_flutter/utils/data_utils.dart';
 import 'package:my_flutter/utils/http/api_response.dart';
+import 'package:my_flutter/widgets/LoadMore.dart';
+import 'package:my_flutter/widgets/NoMore.dart';
 
-class CoinPage extends StatefulWidget {
+class CoinListPage extends StatefulWidget {
   final Map? params;
 
-  CoinPage({this.params});
+  CoinListPage({this.params});
 
   @override
-  _CoinPage createState() => _CoinPage();
+  _CoinListPage createState() => _CoinListPage();
 }
 
-class _CoinPage extends State<CoinPage> {
+class _CoinListPage extends State<CoinListPage> {
   var _page = 1;
   bool loading = true;
   List mDatas = <Datas>[];
@@ -46,7 +49,14 @@ class _CoinPage extends State<CoinPage> {
         actions: [
           IconButton(
             icon: Icon(Icons.help_rounded),
-            onPressed: () {},
+            onPressed: () {
+              BoostNavigator.instance.push(
+                "web", //required
+                withContainer: false, //optional
+                arguments: {"url": Api.COIN_ABOUT}, //optional
+                opaque: true, //optional,default value is true
+              );
+            },
           ),
         ],
         title: Text('积分明细'),
@@ -78,7 +88,7 @@ class _CoinPage extends State<CoinPage> {
 
   Widget _buildContent() {
     if (loading) {
-      return _loadMoreWidget();
+      return LoadMore();
     } else {
       return RefreshIndicator(
         onRefresh: () {
@@ -90,9 +100,9 @@ class _CoinPage extends State<CoinPage> {
           itemCount: mDatas.length,
           itemBuilder: (BuildContext context, int index) {
             if (index >= _total - 1) {
-              return _noMoreWidget();
+              return NoMore();
             } else if (index == mDatas.length - 1) {
-              return _loadMoreWidget();
+              return LoadMore();
             } else {
               return buildItem(mDatas[index]);
             }
@@ -105,58 +115,46 @@ class _CoinPage extends State<CoinPage> {
     }
   }
 
-  Widget _noMoreWidget() {
-    return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: new Center(child: Text("我也是有底线的~",style: TextStyle(color: Colors.black45),)),
-    );
-  }
-
-  Widget _loadMoreWidget() {
-    return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: new Center(child: new CircularProgressIndicator()),
-    );
-  }
-
   Widget buildItem(Datas data) {
-    return SizedBox(
-        height: 70,
-        child: Padding(
-          padding: EdgeInsets.only(left: 10, right: 10, top: 15),
-          child: Row(
-            children: [
-              Expanded(
-                flex: 8,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                        flex: 1,
-                        child: Text(
-                          data.reason!,
-                          style: TextStyle(color: Colors.black, fontSize: 15),
-                        )),
-                    Expanded(
-                        flex: 1,
-                        child: Text(
-                          data.desc!,
-                          style: TextStyle(color: Colors.black54, fontSize: 14),
-                        ))
-                  ],
-                ),
-              ),
-              Expanded(
-                  flex: 1,
-                  child: Center(
+    return Container(
+      height: 70,
+      padding: EdgeInsets.only(left: 20, right: 20),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 8,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                    flex: 1,
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 10),
+                      child: Text(
+                        data.reason!,
+                        style: TextStyle(color: Colors.black, fontSize: 15),
+                      ),
+                    )),
+                Expanded(
+                    flex: 1,
                     child: Text(
-                      checkText(data.coinCount),
-                      style: TextStyle(color: checkColor(data.coinCount)),
-                    ),
-                  ))
-            ],
+                      data.desc!,
+                      style: TextStyle(color: Colors.black54, fontSize: 14),
+                    ))
+              ],
+            ),
           ),
-        ));
+          Expanded(
+              flex: 1,
+              child: Center(
+                child: Text(
+                  checkText(data.coinCount),
+                  style: TextStyle(color: checkColor(data.coinCount)),
+                ),
+              ))
+        ],
+      ),
+    );
   }
 
   Color checkColor(int? str) {
