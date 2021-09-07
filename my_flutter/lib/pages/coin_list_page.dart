@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boost/boost_navigator.dart';
 import 'package:my_flutter/api/api.dart';
+import 'package:my_flutter/common/Constance.dart';
 import 'package:my_flutter/models/CoinListInfo.dart';
 import 'package:my_flutter/utils/data_utils.dart';
 import 'package:my_flutter/utils/http/api_response.dart';
@@ -27,8 +28,9 @@ class _CoinListPage extends State<CoinListPage> {
   void initState() {
     super.initState();
     this.scrollController.addListener(() {
-      if (scrollController.position.pixels >=
-          scrollController.position.maxScrollExtent) {
+      if (mDatas.length < _total &&
+          scrollController.position.pixels >=
+              scrollController.position.maxScrollExtent) {
         _onLoadMore();
       }
     });
@@ -51,7 +53,7 @@ class _CoinListPage extends State<CoinListPage> {
             icon: Icon(Icons.help_rounded),
             onPressed: () {
               BoostNavigator.instance.push(
-                "web", //required
+                FLUTTER_PAGE_WEB, //required
                 withContainer: false, //optional
                 arguments: {"url": Api.COIN_ABOUT}, //optional
                 opaque: true, //optional,default value is true

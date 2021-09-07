@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:my_flutter/api/api.dart';
 import 'package:my_flutter/models/CoinListInfo.dart';
 import 'package:my_flutter/models/CoinRankInfo.dart';
+import 'package:my_flutter/models/CollectionArticleInfo.dart';
+import 'package:my_flutter/models/ShareArticleInfo.dart';
 import 'package:my_flutter/models/UserInfo.dart';
 
 import 'http/api_response.dart';
@@ -41,6 +43,45 @@ class DataUtils {
       var response = await NetUtils.instance
           .get(Api.COIN_RANK + page.toString() + "/json");
       return ApiResponse.completed(CoinRankInfo.fromJson(response));
+    } on DioError catch (err) {
+      return ApiResponse.error(err.error);
+    }
+  }
+
+  ///获取自己分享的文章列表，需要登录后访问
+  static Future<ApiResponse<ShareArticleInfo>> getShareArticles(
+      int page) async {
+    try {
+      var response = await NetUtils.instance
+          .get(Api.SHARE_ARTICLE + page.toString() + "/json");
+      return ApiResponse.completed(ShareArticleInfo.fromJson(response));
+    } on DioError catch (err) {
+      return ApiResponse.error(err.error);
+    }
+  }
+
+  ///获取自己收藏文章列表，需要登录后访问
+  static Future<ApiResponse<CollectionArticleInfo>> getCollectionArticles(
+      int page) async {
+    try {
+      var response = await NetUtils.instance
+          .get(Api.COLLECTION_ARTICLE + page.toString() + "/json");
+      return ApiResponse.completed(CollectionArticleInfo.fromJson(response));
+    } on DioError catch (err) {
+      return ApiResponse.error(err.error);
+    }
+  }
+
+  ///我的收藏页面（该页面包含自己录入的内容）
+  static Future<ApiResponse<Null>> unCollect(
+      int id, int orgId) async {
+    try {
+      var response = await NetUtils.instance.postForm(
+          Api.UN_COLLECT + "$id/json",
+          new FormData.fromMap({
+            "originId": "$orgId",
+          }));
+      return ApiResponse.completed(response);
     } on DioError catch (err) {
       return ApiResponse.error(err.error);
     }

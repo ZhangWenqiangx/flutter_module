@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boost/boost_navigator.dart';
-import 'package:my_flutter/models/CoinRankInfo.dart';
+import 'package:my_flutter/common/Constance.dart';
+import 'package:my_flutter/models/ShareArticleInfo.dart';
 import 'package:my_flutter/utils/data_utils.dart';
 import 'package:my_flutter/utils/http/api_response.dart';
 import 'package:my_flutter/widgets/LoadMore.dart';
 import 'package:my_flutter/widgets/NoMore.dart';
 
-class CoinRankPage extends StatefulWidget {
+class MySharePage extends StatefulWidget {
   @override
-  _CoinRankPage createState() => _CoinRankPage();
+  _MySharePage createState() => _MySharePage();
 }
 
-class _CoinRankPage extends State<CoinRankPage> {
+class _MySharePage extends State<MySharePage> {
   var _page = 1;
   bool loading = true;
   List mDatas = <Datas>[];
@@ -42,7 +43,13 @@ class _CoinRankPage extends State<CoinRankPage> {
             BoostNavigator.instance.pop("");
           },
         ),
-        title: Text('积分排行'),
+        title: Text('我的分享'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {},
+          ),
+        ],
       ),
       body: CustomScrollView(
         slivers: [
@@ -84,58 +91,86 @@ class _CoinRankPage extends State<CoinRankPage> {
   }
 
   Widget buildItem(Datas data) {
-    return SizedBox(
-        height: 45,
-        child: Padding(
-          padding: EdgeInsets.only(left: 20),
-          child: Row(
-            children: [
-              Expanded(
-                  flex: 1,
-                  child: Text(
-                    data.rank!,
-                    style: TextStyle(color: Colors.black38, fontSize: 15),
-                  )),
-              Expanded(
-                  flex: 7,
-                  child: Text(
-                    data.username!,
-                    style: TextStyle(color: Colors.black, fontSize: 15),
-                  )),
-              Expanded(
-                flex: 2,
-                child: Text(
-                  data.coinCount.toString(),
-                  style: TextStyle(color: Colors.blue),
-                ),
-              )
-            ],
-          ),
-        ));
+    return GestureDetector(
+      child: SizedBox(
+          height: 60,
+          child: Padding(
+            padding: EdgeInsets.only(top: 7, bottom: 7),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _textExpand(1, data.title!, Colors.black, 15),
+                Expanded(
+                    child: Flex(
+                  direction: Axis.horizontal,
+                  children: [
+                    _text(data.shareUser!, Colors.black54, 13),
+                    _text(data.niceDate!, Colors.black54, 13),
+                    _text(data.superChapterName! + "/" + data.chapterName!,
+                        Colors.black54, 13),
+                  ],
+                )),
+              ],
+            ),
+          )),
+      onTap: () {
+        print(data.link);
+        BoostNavigator.instance.push(
+          FLUTTER_PAGE_WEB, //required
+          withContainer: false, //optional
+          arguments: {"url": data.link}, //optional
+          opaque: true, //optional,default value is true
+        );
+      },
+    );
+  }
+
+  Widget _text(String text, Color color, double fontSize) {
+    return Padding(
+      padding: EdgeInsets.only(left: 15),
+      child: Text(
+        text,
+        style: TextStyle(color: color, fontSize: fontSize),
+      ),
+    );
+  }
+
+  Widget _textExpand(int? flex, String text, Color color, double fontSize) {
+    return Padding(
+      padding: EdgeInsets.only(left: 15),
+      child: Expanded(
+        flex: flex == null ? 1 : flex,
+        child: Text(
+          text,
+          style: TextStyle(color: color, fontSize: fontSize),
+        ),
+      ),
+    );
   }
 
   void _onLoadMore() {
     _page++;
-    getCoinRank();
+    getData();
   }
 
   void _onRefresh() {
     _page = 1;
     mDatas.clear();
-    getCoinRank();
+    getData();
   }
 
-  void getCoinRank() {
-    DataUtils.getCoinRank(_page).then((value) {
+  void getData() {
+    DataUtils.getShareArticles(_page).then((value) {
       if (loading) {
         setState(() {
           loading = false;
         });
       }
       if (value.status == Status.COMPLETED) {
-        _total = value.data!.total;
+        var articles = value.data!.shareArticles!;
+        _total = articles.datas!.length;
         setState(() {
-          mDatas.addAll(value.data!.datas!);
+          mDatas.addAll(articles.datas!);
         });
       } else {
         setState(() {});

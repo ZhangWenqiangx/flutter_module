@@ -9,4 +9,10 @@ class Api {
 
   static const String COIN_RANK = BASE_URL + 'coin/rank/';
 
+  static const String SHARE_ARTICLE = BASE_URL + 'user/lg/private_articles/';
+
+  static const String COLLECTION_ARTICLE = BASE_URL + 'lg/collect/list/';
+
+  static const String UN_COLLECT = BASE_URL + 'lg/uncollect/';
+
 }
