@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boost/boost_navigator.dart';
-import 'package:my_flutter/common/Constance.dart';
 import 'package:my_flutter/models/CollectionArticleInfo.dart';
 import 'package:my_flutter/utils/data_utils.dart';
 import 'package:my_flutter/utils/http/api_response.dart';
+import 'package:my_flutter/widgets/ItemCollectionList.dart';
 import 'package:my_flutter/widgets/LoadMore.dart';
 import 'package:my_flutter/widgets/NoMore.dart';
 
@@ -20,32 +20,9 @@ class _CollectionPage extends State<MyCollectionPage>
   List mDatas = <Datas>[];
   ScrollController scrollController = ScrollController();
 
-  static const Icon _unLikeIcon = Icon(
-    IconData(0xe8bc, fontFamily: 'myIcon'),
-    color: Colors.black,
-    size: 20,
-  );
-  static const Icon _likeIcon =
-      Icon(IconData(0xe620, fontFamily: 'myIcon'), color: Colors.red, size: 20);
-  late AnimationController _animationController;
-  late Animation<double> _iconAnimation;
-
   @override
   void initState() {
     super.initState();
-    _animationController =
-        AnimationController(duration: Duration(milliseconds: 300), vsync: this);
-
-    _iconAnimation = Tween(begin: 1.0, end: 1.3).animate(_animationController);
-
-    _iconAnimation = TweenSequence([
-      TweenSequenceItem(
-          tween: Tween(begin: 1.0, end: 1.3)
-              .chain(CurveTween(curve: Curves.easeIn)),
-          weight: 50),
-      TweenSequenceItem(tween: Tween(begin: 1.3, end: 1.0), weight: 50),
-    ]).animate(_animationController);
-
     this.scrollController.addListener(() {
       if (mDatas.length < _total &&
           scrollController.position.pixels >=
@@ -110,54 +87,13 @@ class _CollectionPage extends State<MyCollectionPage>
 
   Widget buildItem(int index) {
     Datas data = mDatas[index];
-    return GestureDetector(
-      child: Container(
-        padding: EdgeInsets.only(top: 7, right: 15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _text(data.title!, Colors.black, 15),
-            Row(
-              children: [
-                _text(data.author!, Colors.black54, 13),
-                _text(data.niceDate!, Colors.black54, 13),
-                _text(data.chapterName!, Colors.black54, 13),
-                Spacer(flex: 1),
-                _checkIcon(data.visible!, index)
-              ],
-            )
-          ],
-        ),
-      ),
-      onTap: () {
-        print(data.link);
-        BoostNavigator.instance.push(
-          FLUTTER_PAGE_WEB, //required
-          withContainer: false, //optional
-          arguments: {"url": data.link}, //optional
-          opaque: true, //optional,default value is true
-        );
+    return ItemCollectList(
+      data: data,
+      onCollectCallback: () {
+        setState(() {
+          unCollect(index, data.id!, data.originId!);
+        });
       },
-    );
-  }
-
-  Widget _checkIcon(int flag, int index) {
-    Datas data = mDatas[index];
-    return ScaleTransition(scale: _iconAnimation,child: IconButton(
-      icon: 0 == flag ? _likeIcon : _unLikeIcon,
-      onPressed: () {
-        unCollect(index, data.id!, data.originId!);
-      },
-    ),);
-  }
-
-  Widget _text(String text, Color color, double fontSize) {
-    return Padding(
-      padding: EdgeInsets.only(left: 15),
-      child: Text(
-        text,
-        style: TextStyle(color: color, fontSize: fontSize),
-      ),
     );
   }
 
@@ -196,10 +132,6 @@ class _CollectionPage extends State<MyCollectionPage>
   void unCollect(int index, int id, int orgId) {
     DataUtils.unCollect(id, orgId).then((value) {
       if (value.status == Status.COMPLETED) {
-        if (_iconAnimation.status == AnimationStatus.forward ||
-            _iconAnimation.status == AnimationStatus.reverse) {
-          return;
-        }
         setState(() {
           mDatas.removeAt(index);
           _total = mDatas.length;
@@ -207,11 +139,6 @@ class _CollectionPage extends State<MyCollectionPage>
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("删除成功"),
         ));
-        // if (_iconAnimation.status == AnimationStatus.dismissed) {
-        //   _animationController.forward();
-        // } else if (_iconAnimation.status == AnimationStatus.completed) {
-        //   _animationController.reverse();
-        // }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(value.exception!.message!),
