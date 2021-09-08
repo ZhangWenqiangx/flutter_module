@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class LineProgressIndicator extends StatefulWidget {
   double maxValue;
-  bool completed = false;
+
   LineProgressIndicator({Key? key, required this.maxValue}) : super(key: key);
 
   @override
@@ -24,13 +24,7 @@ class LineProgressIndicatorState extends State<LineProgressIndicator>
     _animate = Tween<double>(
       begin: 0.0,
       end: widget.maxValue,
-    );
-
-    _animationController.addStatusListener((status) {
-      if(status == AnimationStatus.completed){
-        widget.completed = true;
-      }
-    });
+    )..chain(CurveTween(curve: Curves.ease));
 
     _animationController.forward();
     super.initState();

@@ -20,6 +20,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   dio_cookie_manager: ^2.0.0
   cookie_jar: 3.0.1
+  fps_monitor: ^1.12.13-1
 
   flutter_boost:
     git:
@@ -50,4 +51,4 @@ flutter:
   fonts:
     - family: myIcon
       fonts:
-        - asset: assets/fonts/iconfont.ttf
+        - asset: assets/fonts/like_icon_font.ttf
