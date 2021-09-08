@@ -3,9 +3,9 @@ import 'package:flutter_boost/boost_navigator.dart';
 import 'package:my_flutter/models/CollectionArticleInfo.dart';
 import 'package:my_flutter/utils/data_utils.dart';
 import 'package:my_flutter/utils/http/api_response.dart';
-import 'package:my_flutter/widgets/ItemCollectionList.dart';
-import 'package:my_flutter/widgets/LoadMore.dart';
-import 'package:my_flutter/widgets/NoMore.dart';
+import 'package:my_flutter/widgets/item_collection_list.dart';
+import 'package:my_flutter/widgets/load_more.dart';
+import 'package:my_flutter/widgets/no_more.dart';
 
 class MyCollectionPage extends StatefulWidget {
   @override

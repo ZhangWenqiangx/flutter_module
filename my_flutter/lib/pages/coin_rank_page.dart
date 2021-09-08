@@ -3,8 +3,9 @@ import 'package:flutter_boost/boost_navigator.dart';
 import 'package:my_flutter/models/CoinRankInfo.dart';
 import 'package:my_flutter/utils/data_utils.dart';
 import 'package:my_flutter/utils/http/api_response.dart';
-import 'package:my_flutter/widgets/LoadMore.dart';
-import 'package:my_flutter/widgets/NoMore.dart';
+import 'package:my_flutter/widgets/linear_progress_indicator.dart';
+import 'package:my_flutter/widgets/load_more.dart';
+import 'package:my_flutter/widgets/no_more.dart';
 
 class CoinRankPage extends StatefulWidget {
   @override
@@ -14,6 +15,7 @@ class CoinRankPage extends StatefulWidget {
 class _CoinRankPage extends State<CoinRankPage> {
   var _page = 1;
   bool loading = true;
+  int maxValue = 0;
   List mDatas = <Datas>[];
   var _total;
   ScrollController scrollController = ScrollController();
@@ -44,13 +46,7 @@ class _CoinRankPage extends State<CoinRankPage> {
         ),
         title: Text('积分排行'),
       ),
-      body: CustomScrollView(
-        slivers: [
-          SliverFillRemaining(
-            child: _buildContent(),
-          ),
-        ],
-      ),
+      body: _buildContent(),
     );
   }
 
@@ -65,6 +61,7 @@ class _CoinRankPage extends State<CoinRankPage> {
         },
         child: ListView.separated(
           controller: scrollController,
+          addAutomaticKeepAlives: true,
           itemCount: mDatas.length,
           itemBuilder: (BuildContext context, int index) {
             if (index >= _total - 1) {
@@ -72,46 +69,52 @@ class _CoinRankPage extends State<CoinRankPage> {
             } else if (index == mDatas.length - 1) {
               return LoadMore();
             } else {
-              return buildItem(mDatas[index]);
+              return buildItem(mDatas[index], index);
             }
           },
           separatorBuilder: (BuildContext context, int index) => Divider(
-            height: 5,
+            height: 1,
           ),
         ),
       );
     }
   }
 
-  Widget buildItem(Datas data) {
+  Widget buildItem(Datas data, int index) {
+    GlobalObjectKey<LineProgressIndicatorState> refreshKey =
+        GlobalObjectKey<LineProgressIndicatorState>(index);
     return SizedBox(
         height: 45,
-        child: Padding(
-          padding: EdgeInsets.only(left: 20),
-          child: Row(
-            children: [
-              Expanded(
-                  flex: 1,
+        child: Stack(fit: StackFit.expand, children: [
+          LineProgressIndicator(
+              key: refreshKey, maxValue: data.coinCount! / maxValue),
+          Padding(
+            padding: EdgeInsets.only(left: 20),
+            child: Row(
+              children: [
+                Expanded(
+                    flex: 1,
+                    child: Text(
+                      data.rank!,
+                      style: TextStyle(color: Colors.black38, fontSize: 15),
+                    )),
+                Expanded(
+                    flex: 7,
+                    child: Text(
+                      data.username!,
+                      style: TextStyle(color: Colors.black, fontSize: 15),
+                    )),
+                Expanded(
+                  flex: 2,
                   child: Text(
-                    data.rank!,
-                    style: TextStyle(color: Colors.black38, fontSize: 15),
-                  )),
-              Expanded(
-                  flex: 7,
-                  child: Text(
-                    data.username!,
-                    style: TextStyle(color: Colors.black, fontSize: 15),
-                  )),
-              Expanded(
-                flex: 2,
-                child: Text(
-                  data.coinCount.toString(),
-                  style: TextStyle(color: Colors.blue),
-                ),
-              )
-            ],
-          ),
-        ));
+                    data.coinCount.toString(),
+                    style: TextStyle(color: Color(0xFFF37D20)),
+                  ),
+                )
+              ],
+            ),
+          )
+        ]));
   }
 
   void _onLoadMore() {
@@ -129,6 +132,7 @@ class _CoinRankPage extends State<CoinRankPage> {
     DataUtils.getCoinRank(_page).then((value) {
       if (loading) {
         setState(() {
+          maxValue = value.data!.datas![0].coinCount!;
           loading = false;
         });
       }

@@ -4,7 +4,7 @@ import 'package:flutter_boost/boost_navigator.dart';
 import 'package:my_flutter/common/Constance.dart';
 import 'package:my_flutter/models/CollectionArticleInfo.dart';
 
-import 'LikeButtonWidget.dart';
+import 'like_button_widget.dart';
 
 class ItemCollectList extends StatefulWidget {
   Datas data;

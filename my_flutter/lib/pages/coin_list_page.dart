@@ -5,8 +5,8 @@ import 'package:my_flutter/common/Constance.dart';
 import 'package:my_flutter/models/CoinListInfo.dart';
 import 'package:my_flutter/utils/data_utils.dart';
 import 'package:my_flutter/utils/http/api_response.dart';
-import 'package:my_flutter/widgets/LoadMore.dart';
-import 'package:my_flutter/widgets/NoMore.dart';
+import 'package:my_flutter/widgets/load_more.dart';
+import 'package:my_flutter/widgets/no_more.dart';
 
 class CoinListPage extends StatefulWidget {
   final Map? params;

@@ -10,7 +10,7 @@ class NoMore extends StatelessWidget {
       padding: const EdgeInsets.all(15.0),
       child: new Center(
           child: Text(
-            "我也是有底线的~",
+            "没有了~",
             style: TextStyle(color: Colors.black45),
           )),
     );

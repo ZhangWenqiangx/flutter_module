@@ -68,10 +68,10 @@ class LikeAnimation extends AnimatedWidget implements StatefulWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: isLike
-          ? Icon(IconData(0xe620, fontFamily: 'myIcon'),
+          ? Icon(IconData(0xe8c6, fontFamily: 'myIcon'),
               color: Colors.redAccent, size: animation.value)
           : Icon(
-              IconData(0xe8bc, fontFamily: 'myIcon'),
+              IconData(0xe615, fontFamily: 'myIcon'),
               color: Colors.black,
               size: animation.value,
             ),
