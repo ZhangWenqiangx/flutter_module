@@ -162,7 +162,7 @@ class _SingInPageState extends State<SingInPage> {
 
     DataUtils.doLogin(username, password).then((value) {
       if (value.status == Status.COMPLETED) {
-        BoostChannel.instance.sendEventToNative("login_event", {"": ""});
+        BoostChannel.instance.sendEventToNative("login_event", {"flutter_event_type": "type_login"});
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(value.data!.username!),
         ));

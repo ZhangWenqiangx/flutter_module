@@ -1,17 +1,19 @@
 // @dart=2.9
-import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_boost/boost_channel.dart';
 import 'package:flutter_boost/boost_flutter_binding.dart';
 import 'package:flutter_boost/boost_navigator.dart';
 import 'package:flutter_boost/flutter_boost_app.dart';
+import 'package:fps_monitor/widget/custom_widget_inspector.dart';
 import 'package:my_flutter/pages/coin_list_page.dart';
 import 'package:my_flutter/pages/coin_rank_page.dart';
 import 'package:my_flutter/pages/login_page.dart';
 import 'package:my_flutter/pages/my_collection_page.dart';
 import 'package:my_flutter/pages/my_share_page.dart';
+import 'package:my_flutter/pages/setting_page.dart';
+import 'package:my_flutter/utils/http/cookie_utils.dart';
 
 import 'api/api.dart';
 import 'common/Constance.dart';
@@ -34,6 +36,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   VoidCallback removeListener;
+  GlobalKey<NavigatorState> globalKey = GlobalKey();
 
   @override
   void initState() {
@@ -51,7 +54,9 @@ class _MyAppState extends State<MyApp> {
     },
     FLUTTER_PAGE_COIN_LIST: (settings, uniqueId) {
       return PageRouteBuilder<dynamic>(
-          settings: settings, pageBuilder: (_, __, ___) => CoinListPage(params: settings.arguments));
+          settings: settings,
+          pageBuilder: (_, __, ___) =>
+              CoinListPage(params: settings.arguments));
     },
     FLUTTER_PAGE_COIN_RANK: (settings, uniqueId) {
       return PageRouteBuilder<dynamic>(
@@ -65,6 +70,10 @@ class _MyAppState extends State<MyApp> {
       return PageRouteBuilder<dynamic>(
           settings: settings, pageBuilder: (_, __, ___) => MyCollectionPage());
     },
+    FLUTTER_PAGE_SETTING: (settings, uniqueId) {
+      return PageRouteBuilder<dynamic>(
+          settings: settings, pageBuilder: (_, __, ___) => SettingPage());
+    },
   };
 
   Route<dynamic> routeFactory(RouteSettings settings, String uniqueId) {
@@ -77,23 +86,25 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return FlutterBoostApp(routeFactory);
+    SchedulerBinding.instance.addPostFrameCallback(
+        (t) => overlayState = globalKey.currentState.overlay);
+    return MaterialApp(
+        navigatorKey: globalKey,
+        builder: (ctx, child) => CustomWidgetInspector(
+              child: child,
+            ),
+        home: FlutterBoostApp(routeFactory));
   }
 
   ///从原生拿用户cookie
   void registerCookieListener() {
-    removeListener = BoostChannel.instance.addEventListener("resultOfCookie",
-        (key, arguments) {
-      var cookies = <Cookie>[];
-      List decode = json.decode(arguments["result"]);
-      decode.forEach((element) {
-        print(element);
-        cookies.add(Cookie(element['name'], element['value']));
-      });
+    removeListener = BoostChannel.instance
+        .addEventListener(FLUTTER_MSG_RESULT_COOKIE, (key, arguments) {
+      var cookies = CookieUtils.encodeCookie(arguments["result"]);
       Global.cookieJar.saveFromResponse(Uri.parse(Api.BASE_URL), cookies);
       return;
     });
-    BoostChannel.instance.sendEventToNative("getCookie", {"": ""});
+    BoostChannel.instance.sendEventToNative(FLUTTER_MSG_GET_COOKIE, {"": ""});
   }
 
   @override

@@ -5,6 +5,8 @@ class Api {
 
   static const String DO_LOGIN = BASE_URL + 'user/login'; //登陆
 
+  static const String LOGOUT = BASE_URL + 'user/logout/json';
+
   static const String COIN_LIST = BASE_URL + 'lg/coin/list/';
 
   static const String COIN_RANK = BASE_URL + 'coin/rank/';
