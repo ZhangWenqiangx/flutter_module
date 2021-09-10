@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_boost/boost_channel.dart';
 import 'package:flutter_boost/boost_navigator.dart';
+import 'package:my_flutter/common/Constance.dart';
 import 'package:my_flutter/models/CollectionArticleInfo.dart';
 import 'package:my_flutter/utils/data_utils.dart';
 import 'package:my_flutter/utils/http/api_response.dart';
@@ -137,8 +139,9 @@ class _CollectionPage extends State<MyCollectionPage>
           _total = mDatas.length;
         });
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("删除成功"),
+          content: Text("取消收藏成功"),
         ));
+        BoostChannel.instance.sendEventToNative(FLUTTER_MSG_CANCLE_COLLECT,{"":""});
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(value.exception!.message!),
