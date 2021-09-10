@@ -27,6 +27,16 @@ class DataUtils {
     }
   }
 
+  ///退出
+  static Future<ApiResponse<Null>> logout() async {
+    try {
+      var response = await NetUtils.instance.get(Api.LOGOUT);
+      return ApiResponse.completed(response);
+    } on DioError catch (err) {
+      return ApiResponse.error(err.error);
+    }
+  }
+
   ///获取个人积分，需要登录后访问
   static Future<ApiResponse<CoinListInfo>> getUserCoinList(int page) async {
     try {
