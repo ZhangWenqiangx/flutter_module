@@ -53,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
               child: Image(
                 width: 180,
                 height: 160,
-                image: AssetImage("./assets/imgs/nothing.png"),
+                image: AssetImage("./assets/imgs/nothing.webp"),
               ),
             ),
             //中间切换状态

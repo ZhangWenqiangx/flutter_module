@@ -46,7 +46,7 @@ flutter:
     iosBundleIdentifier: com.example.myFlutter
 
   assets:
-    - assets/imgs/nothing.png
+    - assets/imgs/nothing.webp
 
   fonts:
     - family: myIcon
